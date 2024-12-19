@@ -1,4 +1,3 @@
-# README.md
 # PyGroPMF
 
 A Python package for visualizing Potential of Mean Force (PMF) data from GROMACS simulations.
