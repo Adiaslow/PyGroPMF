@@ -1,65 +1,59 @@
-# src/pygropmf/visualizers/heatmap_visualizer.py
-
-from pathlib import Path
-from typing import Any
-import logging
-import numpy as np
+# pygropmf/visualizers/heatmap_visualizer.py
 import matplotlib.pyplot as plt
+import numpy as np
+from pathlib import Path
+from ..configurations.grid_config import GridConfig
+from ..core.results.grid_result import GridResult
+from ..core.protocols.visualizer import Visualizer
 from matplotlib.figure import Figure
-import seaborn as sns
-
-from ..core.protocols import Visualizer
-from ..core.results import GridResult
 
 class HeatmapVisualizer(Visualizer):
-    """Creates heatmap visualizations for PMF data using seaborn"""
+    """Creates heatmap visualizations of PMF data."""
 
-    def __init__(self, cmap: str = 'viridis', figsize: tuple[int, int] = (10, 8)):
-        self.cmap = cmap
-        self.figsize = figsize
+    def __init__(self, config: GridConfig):
+        """Initialize with configuration."""
+        self.config = config
+        if self.config.plot_type != 'heatmap':
+            raise ValueError("HeatmapVisualizer requires plot_type='heatmap'")
 
     def create_visualization(self, data: GridResult) -> Figure:
-        """
-        Create heatmap visualization
+        """Create a heatmap visualization."""
+        fig, ax = plt.subplots(figsize=self.config.figsize, dpi=self.config.dpi)
 
-        Args:
-            data: GridResult containing coordinates and PMF values
+        heatmap = ax.imshow(
+            data.pmf_values.T,
+            cmap=self.config.cmap,
+            aspect='auto',
+            extent=[
+                data.x_coords.min(),
+                data.x_coords.max(),
+                data.y_coords.min(),
+                data.y_coords.max()
+            ],
+            origin='lower'
+        )
 
-        Returns:
-            matplotlib Figure object
-        """
-        try:
-            # Create figure and axis
-            fig, ax = plt.subplots(figsize=self.figsize)
+        ax.set_xlabel('PC1')
+        ax.set_ylabel('PC2')
+        ax.set_title('Potential of Mean Force')
 
-            # Create heatmap using seaborn
-            sns.heatmap(data.pmf_values.T,
-                       cmap=self.cmap,
-                       xticklabels=np.round(data.x_coords, 1),
-                       yticklabels=np.round(data.y_coords, 1),
-                       ax=ax)
+        plt.colorbar(heatmap, label='Energy (kJ/mol)', ax=ax)
+        plt.tight_layout()
 
-            # Set labels and title
-            ax.set_xlabel('PC1')
-            ax.set_ylabel('PC2')
-            ax.set_title('PMF Heatmap')
-
-            return fig
-
-        except Exception as e:
-            logging.error(f"Error creating visualization: {e}")
-            raise
+        return fig
 
     def save_visualization(self, figure: Figure, file_path: Path) -> None:
-        """
-        Save visualization to file
+        """Save the visualization to a file."""
+        figure.savefig(file_path, dpi=self.config.dpi, bbox_inches='tight')
+        plt.close(figure)
 
-        Args:
-            figure: matplotlib Figure to save
-            file_path: Output file path
-        """
-        try:
-            figure.savefig(file_path, dpi=300, bbox_inches='tight')
-        except Exception as e:
-            logging.error(f"Error saving visualization to {file_path}: {e}")
-            raise IOError(f"Failed to save visualization: {e}") from e
+    def _configure_axis(self, ax, data: GridResult):
+        """Configure axis settings."""
+        xticks = np.linspace(data.x_coords.min(), data.x_coords.max(), 5)
+        yticks = np.linspace(data.y_coords.min(), data.y_coords.max(), 5)
+
+        ax.set_xticks(xticks)
+        ax.set_yticks(yticks)
+
+        ax.set_xticklabels([f'{x:.1f}' for x in xticks])
+        ax.set_yticklabels([f'{y:.1f}' for y in yticks])
