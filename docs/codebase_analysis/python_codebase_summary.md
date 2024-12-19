@@ -1,10 +1,10 @@
 # Python Codebase Summary
 
-Generated on: 2024-12-18 22:16:41
+Generated on: 2024-12-18 22:44:25
 
 ## Summary Statistics
-- Total Python files: 30
-- Total functions: 53
+- Total Python files: 31
+- Total functions: 72
 
 ---
 
@@ -40,13 +40,14 @@ def test_get_grid_coordinates
 
 ### test_io.py
 **File Statistics:**
-- Total lines: 90
-- Non-empty lines: 76
-- Number of functions: 5
+- Total lines: 81
+- Non-empty lines: 68
+- Number of functions: 6
 
 **Functions:**
 ```python
 def sample_energy_pdf_file
+def sample_pmf_result
 def test_energy_pdf_reader
 def test_energy_pdf_reader_empty_file
 def test_pca_reader_dimension_mismatch
@@ -110,12 +111,32 @@ def __hash__
 ```
 ---
 
-### pmf_calculator_config.py
+### pmf_config.py
 **File Statistics:**
-- Total lines: 17
-- Non-empty lines: 14
-- Number of functions: 0
+- Total lines: 72
+- Non-empty lines: 53
+- Number of functions: 17
 
+**Functions:**
+```python
+def __init__
+def _load_config
+def get
+def temperature
+def x_bin_size
+def y_bin_size
+def x_axis
+def y_axis
+def x_min
+def x_bin
+def y_min
+def y_bin
+def ncomp
+def inppdf
+def inppca
+def outgrd
+def outplt
+```
 ---
 
 
@@ -152,7 +173,7 @@ def __hash__
 
 ### pmf_result.py
 **File Statistics:**
-- Total lines: 13
+- Total lines: 12
 - Non-empty lines: 10
 - Number of functions: 0
 
@@ -191,8 +212,8 @@ def save_visualization
 
 ### pmf_calculator.py
 **File Statistics:**
-- Total lines: 85
-- Non-empty lines: 69
+- Total lines: 74
+- Non-empty lines: 58
 - Number of functions: 5
 
 **Functions:**
@@ -201,7 +222,7 @@ def __init__
 def calculate_pmf
 def _get_probability
 def _calculate_final_pmf
-def get_grid_coordinates
+def _generate_grid_coordinates
 ```
 ---
 
@@ -339,8 +360,8 @@ def _configure_axis
 
 ### grid_writer.py
 **File Statistics:**
-- Total lines: 19
-- Non-empty lines: 16
+- Total lines: 16
+- Non-empty lines: 12
 - Number of functions: 1
 
 **Functions:**
@@ -351,8 +372,8 @@ def write
 
 ### plot_writer.py
 **File Statistics:**
-- Total lines: 42
-- Non-empty lines: 33
+- Total lines: 30
+- Non-empty lines: 26
 - Number of functions: 1
 
 **Functions:**
@@ -387,13 +408,29 @@ def read
 
 ### pca_reader.py
 **File Statistics:**
-- Total lines: 27
-- Non-empty lines: 21
+- Total lines: 26
+- Non-empty lines: 20
 - Number of functions: 2
 
 **Functions:**
 ```python
 def __init__
 def read
+```
+---
+
+
+## Directory: pygropmf/scripts
+
+
+### main.py
+**File Statistics:**
+- Total lines: 38
+- Non-empty lines: 29
+- Number of functions: 1
+
+**Functions:**
+```python
+def main
 ```
 ---

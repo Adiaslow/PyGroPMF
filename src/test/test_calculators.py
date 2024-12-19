@@ -1,26 +1,36 @@
 # src/test/test_calculators.py
 import pytest
 import numpy as np
+import json  # Import json to handle JSON operations
 from pathlib import Path
-from pygropmf.core.calculators import PMFCalculator
-from pygropmf.configurations import PMFCalculatorConfig
+from pygropmf.core.calculators.pmf_calculator import PMFCalculator
+from pygropmf.configurations.pmf_config import PMFConfig
 from pygropmf.core.data.energy_pdf_data import EnergyPDFData
 from pygropmf.core.data.pca_data import PCAData
+from pygropmf.core.results.pmf_result import PMFResult
 
 @pytest.fixture
-def calculator_config():
-    return PMFCalculatorConfig(
-        n_components=2,
-        x_axis=0,
-        y_axis=1,
-        x_min=-5.0,
-        x_bin=0.5,
-        x_bin_size=20,
-        y_min=-5.0,
-        y_bin=0.5,
-        y_bin_size=20,
-        temperature=300.0
-    )
+def calculator_config(tmp_path):
+    # Create a temporary config file
+    config_path = tmp_path / "config.json"
+    config_data = {
+        "temperature": 300.0,
+        "x_bin_size": 20,
+        "y_bin_size": 20,
+        "x_axis": 0,
+        "y_axis": 1,
+        "x_min": -5.0,
+        "x_bin": 0.5,
+        "y_min": -5.0,
+        "y_bin": 0.5,
+        "ncomp": 2,
+        "inppdf": str(tmp_path / "energy_pdf.csv"),
+        "inppca": str(tmp_path / "pca.csv"),
+        "outgrd": str(tmp_path / "out.grid"),
+        "outplt": str(tmp_path / "out.plot")
+    }
+    config_path.write_text(json.dumps(config_data))
+    return PMFConfig(config_path)
 
 @pytest.fixture
 def energy_pdf_data():
@@ -56,12 +66,13 @@ def test_get_probability(calculator_config, energy_pdf_data):
 
 def test_calculate_pmf(calculator_config, energy_pdf_data, pca_data):
     calculator = PMFCalculator(calculator_config)
-    pmf = calculator.calculate_pmf(energy_pdf_data, pca_data)
+    pmf_result = calculator.calculate_pmf(energy_pdf_data, pca_data)
 
-    assert pmf.shape == (20, 20)
-    assert not np.any(np.isnan(pmf))
-    assert np.all(pmf[pmf < 50.0] >= 0.0)  # PMF values should be non-negative
-    assert np.any(pmf == 50.0)  # Should have some zero-probability regions
+    assert isinstance(pmf_result, PMFResult)
+    assert pmf_result.pmf_values.shape == (20, 20)
+    assert not np.any(np.isnan(pmf_result.pmf_values))
+    assert np.all(pmf_result.pmf_values[pmf_result.pmf_values < 50.0] >= 0.0)  # PMF values should be non-negative
+    assert np.any(pmf_result.pmf_values == 50.0)  # Should have some zero-probability regions
 
 def test_get_grid_coordinates(calculator_config):
     calculator = PMFCalculator(calculator_config)

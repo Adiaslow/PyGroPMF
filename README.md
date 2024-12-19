@@ -1,5 +1,9 @@
 # PyGroPMF
 
+[![PyPI version](https://badge.fury.io/py/pygropmf.svg)](https://badge.fury.io/py/pygropmf)
+[![Build Status](https://travis-ci.com/Adiaslow/PyGroPMF.svg?branch=main)](https://travis-ci.com/Adiaslow/PyGroPMF)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A Python package for visualizing Potential of Mean Force (PMF) data from GROMACS simulations.
 
 ## Installation
@@ -10,24 +14,80 @@ pip install pygropmf
 
 ## Quick Start
 
+Here's a quick example to get you started with visualizing PMF data using PyGroPMF.
+
 ```python
-from pygropmf import GridResult, GridConfig, PMFVisualizer
-import numpy as np
+import json
+from pygropmf.configurations.pmf_config import PMFConfig
+from pygropmf.configurations.grid_config import GridConfig
+from pygropmf.io.readers.energy_pdf_reader import EnergyPDFReader
+from pygropmf.io.readers.pca_reader import PCAReader
+from pygropmf.core.calculators.pmf_calculator import PMFCalculator
+from pygropmf.visualizers.contour_visualizer import ContourVisualizer
+from pygropmf.visualizers.heatmap_visualizer import HeatmapVisualizer
 
-# Prepare your PMF data
-data = GridResult(
-    x_coords=your_x_data,
-    y_coords=your_y_data,
-    pmf_values=your_pmf_values
-)
+# Load the configuration from a file
+with open('path/to/config.json', 'r') as f:
+    config_data = json.load(f)
 
-# Configure visualization
-config = GridConfig(plot_type='contour', cmap='viridis')
+pmf_config = PMFConfig(config_data['pmf_config'])
+grid_config = GridConfig(config_data['grid_config'])
 
-# Create and save visualization
-visualizer = PMFVisualizer(config)
-fig = visualizer.create_visualization(data)
-visualizer.save_visualization(fig, 'pmf_plot.png')
+# Initialize readers, calculator, and visualizers
+energy_pdf_path = pmf_config.inppdf
+pca_path = pmf_config.inppca
+out_contour_plot_path = grid_config.output_contour_plot
+out_heatmap_plot_path = grid_config.output_heatmap_plot
+
+energy_pdf_data = EnergyPDFReader.read(energy_pdf_path)
+pca_reader = PCAReader(n_components=pmf_config.ncomp)
+pca_data = pca_reader.read(pca_path)
+
+pmf_calculator = PMFCalculator(pmf_config)
+pmf_result = pmf_calculator.calculate_pmf(energy_pdf_data, pca_data)
+
+# Use visualizers for visualization
+contour_visualizer = ContourVisualizer(grid_config)
+contour_fig = contour_visualizer.create_visualization(pmf_result)
+contour_visualizer.save_visualization(contour_fig, out_contour_plot_path)
+
+heatmap_visualizer = HeatmapVisualizer(grid_config)
+heatmap_fig = heatmap_visualizer.create_visualization(pmf_result)
+heatmap_visualizer.save_visualization(heatmap_fig, out_heatmap_plot_path)
+```
+
+## Configuration
+
+Below is an example of a configuration file (`config.json`) used to set up PMF calculations and visualizations.
+
+```json
+{
+    "pmf_config": {
+        "temperature": 300.0,
+        "x_bin_size": 20,
+        "y_bin_size": 20,
+        "x_axis": 0,
+        "y_axis": 1,
+        "x_min": -5.0,
+        "x_bin": 0.5,
+        "y_min": -5.0,
+        "y_bin": 0.5,
+        "ncomp": 2,
+        "inppdf": "path/to/energy_pdf.csv",
+        "inppca": "path/to/pca.csv",
+        "outgrd": "path/to/output.grid",
+        "outplt": "path/to/output.plot"
+    },
+    "grid_config": {
+        "plot_type": "contour",  // or "heatmap"
+        "figsize": [10, 8],
+        "dpi": 100,
+        "levels": 20,
+        "cmap": "viridis",
+        "output_contour_plot": "path/to/contour_plot_output.png",
+        "output_heatmap_plot": "path/to/heatmap_plot_output.png"
+    }
+}
 ```
 
 ## Development

@@ -9,14 +9,10 @@ class EnergyPDFReader:
 
     @staticmethod
     def read(filepath: Path) -> EnergyPDFData:
-        """Read energy PDF data from file."""
-        df = pd.read_csv(filepath, sep=r'\s+', header=None,
-                         names=['energy', 'log_probability'])
-
+        df = pd.read_csv(filepath, sep=r'\s+', header=None, names=['energy', 'log_probability'])
         if df.empty:
             raise pd.errors.EmptyDataError("The file is empty")
 
-        # Convert log probabilities to normal scale and normalize
         max_log_prob = df['log_probability'].max()
         probabilities = np.exp(df['log_probability'] - max_log_prob)
         probabilities[probabilities < 1e-11] = 0.0

@@ -1,9 +1,9 @@
 # pygropmf/visualizers/contour_visualizer.py
+
 import matplotlib.pyplot as plt
-import numpy as np
 from pathlib import Path
 from ..configurations.grid_config import GridConfig
-from ..core.results.grid_result import GridResult
+from ..core.results.pmf_result import PMFResult
 from ..core.protocols.visualizer import Visualizer
 from matplotlib.figure import Figure
 
@@ -23,7 +23,7 @@ class ContourVisualizer(Visualizer):
         ax.set_title('Potential of Mean Force')
         fig.colorbar(mappable, ax=ax, label='Energy (kJ/mol)')
 
-    def create_visualization(self, data: GridResult) -> Figure:
+    def create_visualization(self, data: PMFResult) -> Figure:
         """Create a contour plot visualization."""
         fig, ax = plt.subplots(figsize=self.config.figsize, dpi=self.config.dpi)
 

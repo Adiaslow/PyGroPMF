@@ -1,9 +1,10 @@
 # pygropmf/visualizers/heatmap_visualizer.py
+
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
 from ..configurations.grid_config import GridConfig
-from ..core.results.grid_result import GridResult
+from ..core.results.pmf_result import PMFResult
 from ..core.protocols.visualizer import Visualizer
 from matplotlib.figure import Figure
 
@@ -16,7 +17,7 @@ class HeatmapVisualizer(Visualizer):
         if self.config.plot_type != 'heatmap':
             raise ValueError("HeatmapVisualizer requires plot_type='heatmap'")
 
-    def create_visualization(self, data: GridResult) -> Figure:
+    def create_visualization(self, data: PMFResult) -> Figure:
         """Create a heatmap visualization."""
         fig, ax = plt.subplots(figsize=self.config.figsize, dpi=self.config.dpi)
 
@@ -47,7 +48,7 @@ class HeatmapVisualizer(Visualizer):
         figure.savefig(file_path, dpi=self.config.dpi, bbox_inches='tight')
         plt.close(figure)
 
-    def _configure_axis(self, ax, data: GridResult):
+    def _configure_axis(self, ax, data: PMFResult):
         """Configure axis settings."""
         xticks = np.linspace(data.x_coords.min(), data.x_coords.max(), 5)
         yticks = np.linspace(data.y_coords.min(), data.y_coords.max(), 5)

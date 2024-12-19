@@ -1,0 +1,27 @@
+{
+    "pmf_config": {
+        "temperature": 300.0,
+        "x_bin_size": 20,
+        "y_bin_size": 20,
+        "x_axis": 0,
+        "y_axis": 1,
+        "x_min": -5.0,
+        "x_bin": 0.5,
+        "y_min": -5.0,
+        "y_bin": 0.5,
+        "ncomp": 2,
+        "inppdf": "path/to/energy_pdf.csv",
+        "inppca": "path/to/pca.csv",
+        "outgrd": "path/to/output.grid",
+        "outplt": "path/to/output.plot"
+    },
+    "grid_config": {
+        "plot_type": "contour",  // or "heatmap"
+        "figsize": [10, 8],
+        "dpi": 100,
+        "levels": 20,
+        "cmap": "viridis",
+        "output_contour_plot": "path/to/contour_plot_output.png",
+        "output_heatmap_plot": "path/to/heatmap_plot_output.png"
+    }
+}
